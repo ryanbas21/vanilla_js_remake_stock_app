@@ -1,14 +1,20 @@
-var express = require('express');
+var express = require ('express');
 var app = express();
-var cors = require('cors');
-var markit = require('node-markitondemand');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var expressSession = require('express-session');
-var config = require('./config.secret');
-var PORT = process.env.PORT || 3000;
+var config = require('./config.secret'); //require config.secret for cookies
+var PORT = process.env.PORT || 3000; //port
+//http for requests
 var http = require('http');
+
+
+//setup for mongo
+// var mongoose = require('mongoose');
+// mongoose.connect('mongodb://192.168.43.2:27017');
+var cors = require('cors');
 app.use(cors());
+//setup for express session/body parser
+var cookieParser = require('cookie-parser');
+var bodyParser = require("body-parser");
+var expressSession = require('express-session');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -17,34 +23,34 @@ app.use(expressSession({
 	resave: true,
 	saveUninitialized: true
 }));
-
-//Index Route
-app.get('/:id',function (req,res,next){
+var stockData;
+//setup fetch-stock
+var get_stock = require("fetch-stock");
+app.get('/stock/:id', function (req,res){
 	
-	markit.lookup(req.params.id, function (err,data){
-		//Where data is an array of stocks
-		//getStock()
-			//getStock is an alias of lookup()
-			//Used to search stocks.
-		//getQuote()
-		//Used to get latest stock data.
-			if (err) {
-				console.log(err);
-				var errorString = "An error has occured, Bad Stock Symbol Most Likely!";
-				res.send(errorString);
-				return; 
-			}
-			if (data) {
-				console.log(data);
-				console.log("Type of Data " + typeof data);
-				res.send(data);
+		get_stock.getInfo(req.params.id, function(err, result){ 
+			console.log(result);
+		if (err){
+			console.log(err);
+			var errorString = "Bad Symbol Error";
+			console.log(errorString);
+			res.send(errorString);
+		} 
+		else { 
+			if(result[0] == 'h'){
+				res.send(JSON.stringify([]));
 				return;
 			}
-		console.log(data);
+		stockData = JSON.parse(result);
+			res.send(stockData);
+			console.log(stockData[0].l_cur);
+			return ;
+		}
 	});
+
 });
 
-app.listen(PORT,'localhost',function(){
-	console.log('app started');
-} )
-
+//node listens on server PORT or localhost
+app.listen(PORT, 'localhost', function(){
+	console.log('app started on ' + PORT);
+});

@@ -10,7 +10,7 @@ function getStockSymbol (event){
 	var	userStock = document.getElementById("search").value;
 	console.log(userStock);
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'http://localhost:3000/' + userStock);
+		xhr.open('POST', 'http://localhost:3000/stock/' + userStock);
 		xhr.send(userStock);
 		xhr.onreadystatechange = function () {
 		  var DONE = 4; // readyState 4 means the request is done.
