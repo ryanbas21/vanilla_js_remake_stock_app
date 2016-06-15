@@ -6,9 +6,6 @@ var PORT = process.env.PORT || 3000; //port
 var http = require('http');
 
 
-//setup for mongo
-// var mongoose = require('mongoose');
-// mongoose.connect('mongodb://192.168.43.2:27017');
 var cors = require('cors');
 app.use(cors());
 //setup for express session/body parser
@@ -26,30 +23,36 @@ app.use(expressSession({
 var stockData;
 //setup fetch-stock
 var get_stock = require("fetch-stock");
-app.get('/stock/:id', function (req,res){
-	
-		get_stock.getInfo(req.params.id, function(err, result){ 
-			console.log(result);
-		if (err){
-			console.log(err);
-			var errorString = "Bad Symbol Error";
-			console.log(errorString);
-			res.send(errorString);
+
+app.get('/',function(req,res){
+	res.sendFile(__dirname + '/app/index.html');
+});
+
+app.post('/stock/:id', function (req,res){
+	get_stock.getInfo(req.params.id, function(err, result){ 
+	if (err){
+		var errorString = "Bad Symbol Error";
+		console.log(errorString);
+		res.send(errorString);
 		} 
 		else { 
 			if(result[0] == 'h'){
 				res.send(JSON.stringify([]));
 				return;
-			}
+		}
 		stockData = JSON.parse(result);
-			res.send(stockData);
-			console.log(stockData[0].l_cur);
-			return ;
+		console.log(stockData);
+		res.send(stockData);
+		return;
 		}
 	});
-
+app.get('/stock/:id', function (req,res){
+	res.send(stockData);
+	
 });
 
+});
+app.use(express.static('app'));
 //node listens on server PORT or localhost
 app.listen(PORT, 'localhost', function(){
 	console.log('app started on ' + PORT);
