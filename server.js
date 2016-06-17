@@ -60,7 +60,9 @@ app.get('/stock/:id', function (req,res){
 
 });
 
-
+app.get('/favicon.ico', function (req,res){
+	res.redirect('/stock/');
+});
 //setup so that express can load a static html page.
 app.use(express.static('app'));
 
