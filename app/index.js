@@ -33,6 +33,7 @@ function appendStockData (getRequest) {
 		$("#stockSymbol").append(stockData[i].t);
 		$("#stockPrice").append(stockData[i].l);	
 		$("#stockExchange").append(stockData[i].e);
+		
 	}
 	
 }//End of appendStockData
